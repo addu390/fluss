@@ -127,7 +127,7 @@ class KvSnapshotITCase {
             CompletedSnapshot completedSnapshot =
                     waitValue(
                                     () -> completedSnapshotHandleStore.get(tb, snapshot1Id),
-                                    Duration.ofMinutes(2),
+                                    Duration.ofSeconds(25),
                                     "Fail to wait for the snapshot 0 for bucket " + tb)
                             .retrieveCompleteSnapshot();
 
@@ -155,7 +155,7 @@ class KvSnapshotITCase {
             completedSnapshot =
                     waitValue(
                                     () -> completedSnapshotHandleStore.get(tb, snapshot2Id),
-                                    Duration.ofMinutes(2),
+                                    Duration.ofSeconds(25),
                                     "Fail to wait for the snapshot 0 for bucket " + tb)
                             .retrieveCompleteSnapshot();
 
@@ -207,8 +207,9 @@ class KvSnapshotITCase {
     private static Configuration initConfig() {
         Configuration conf = new Configuration();
         conf.setInt(ConfigOptions.DEFAULT_REPLICATION_FACTOR, 3);
-        // set a shorter interval for test
-        conf.set(ConfigOptions.KV_SNAPSHOT_INTERVAL, Duration.ofSeconds(1));
+        // Setting a longer interval to increase chance of race condition
+        // With 15s interval and 25s timeout, if one snapshot is skipped, we'll likely encounter
+        conf.set(ConfigOptions.KV_SNAPSHOT_INTERVAL, Duration.ofSeconds(15));
 
         return conf;
     }
